@@ -13,11 +13,11 @@ function App() {
 
 
   function handleEditAvatarClick() {
-    setIsEditProfilePopupOpen(true);
+    setIsEditAvatarPopupOpen(true);
   }
 
   function handleEditProfileClick() {
-    setIsEditAvatarPopupOpen(true);
+    setIsEditProfilePopupOpen(true);
   }
 
   function handleAddPlaceClick() {
@@ -63,7 +63,7 @@ function App() {
         <input type="url" name="link" className="popup__input popup__input_type_card-link" id="card-link-input" placeholder="Card link" required/>
         <span className="popup__error card-link-input-error"></span>
       </PopupWithForm>
-      <PopupWithForm name="remove-card" title="Are you sure?"></PopupWithForm>
+      <PopupWithForm name="remove-card" title="Are you sure?" />
       <ImagePopup card={selectedCard} onClose={closeAllPopups}/>
     </div>
   );

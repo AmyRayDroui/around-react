@@ -3,22 +3,29 @@ import Card from './Card.js';
 import api from '../utils/api.js';
 
 
-function Main(props) {
-  const [userName, setUserName] = React.useState('');
-  const [userDescription, setUserDescription] = React.useState('');
-  const [userAvatar , setUserAvatar] = React.useState('');
+function Main({onEditAvatarClick, onEditProfileClick, onAddPlaceClick, onCardClick}) {
+  const [user, setUser] = React.useState({
+    name: '',
+    description: '',
+    avatar: ''
+  });
   const [cards, setCards] = React.useState([]);
   
   React.useEffect(() => {
     api.getUserInfo()
     .then(userInfo => {
-      setUserName(userInfo.name);
-      setUserDescription(userInfo.about);
-      setUserAvatar(userInfo.avatar);
+      setUser({
+        name: userInfo.name,
+        description: userInfo.about,
+        avatar: userInfo.avatar
+      });
     })
     .catch((error) => {
       console.log(error);
     });
+  },[]);
+
+  React.useEffect(() => {
     api.getInitialCards()
     .then(serverCards => {
       setCards(serverCards);
@@ -33,21 +40,21 @@ function Main(props) {
     <main className="content">
     <section className="profile">
       <div className="profile__image-container">
-        <img id="profile-image" src={userAvatar} alt={`${userName}'s avatar'`} className="profile__image"/>
-        <button className="profile__image-overlay" onClick={props.onEditAvatarClick}></button>
+        <img id="profile-image" src={user.avatar} alt={`${user.name}'s avatar`} className="profile__image"/>
+        <button className="profile__image-overlay" onClick={onEditAvatarClick} />
       </div>
       <div className="profile__container profile__overflow-element">
-        <h1 className="profile__name profile__overflow-element">{userName}</h1>
-        <button type="button" className="profile__button profile__button_type_edit" onClick={props.onEditProfileClick} aria-label="Edit profile"></button>
+        <h1 className="profile__name profile__overflow-element">{user.name}</h1>
+        <button type="button" className="profile__button profile__button_type_edit" onClick={onEditProfileClick} aria-label="Edit profile" />
       </div>
-      <p className="profile__info profile__overflow-element">{userDescription}</p>
-      <button type="button" className="profile__button profile__button_type_add-image" onClick={props.onAddPlaceClick} aria-label="Add image"></button>
+      <p className="profile__info profile__overflow-element">{user.description}</p>
+      <button type="button" className="profile__button profile__button_type_add-image" onClick={onAddPlaceClick} aria-label="Add image" />
     </section>
     <section className="images-container">
       {
         cards.map((cardElement) => 
         (
-          <Card card={cardElement} onCardClick={props.onCardClick} key={cardElement._id}/>
+          <Card card={cardElement} onCardClick={onCardClick} key={cardElement._id}/>
         ))
       }
     </section>
