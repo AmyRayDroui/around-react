@@ -15,7 +15,8 @@ function App() {
   const [currentUser, setCurrentUser] = useState({
     name: '',
     description: '',
-    avatar: null
+    avatar: null,
+    id: ''
   });
 
   useEffect(() => {
@@ -24,7 +25,8 @@ function App() {
       setCurrentUser({
         name: userInfo.name,
         description: userInfo.about,
-        avatar: userInfo.avatar
+        avatar: userInfo.avatar,
+        _id: userInfo._id
       });
     })
     .catch((error) => {
