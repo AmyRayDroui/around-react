@@ -10,7 +10,6 @@ function EditAvatarPopup({isOpen, onClose, onUpdateAvatar}) {
     onUpdateAvatar({
       link: inputRef.current.value
     });
-    onClose();
   }
 
   return (

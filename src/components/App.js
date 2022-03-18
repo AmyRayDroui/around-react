@@ -6,6 +6,7 @@ import PopupWithForm from './PopupWithForm';
 import ImagePopup from './ImagePopup';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup  from './EditAvatarPopup';
+import AddPlacePopup from './AddPlacePopup';
 import api from '../utils/api.js';
 import {CurrentUserContext} from '../contexts/CurrentUserContext';
 
@@ -15,6 +16,7 @@ function App() {
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
+  const [cards, setCards] = useState([]);
   const [currentUser, setCurrentUser] = useState({
     name: '',
     description: '',
@@ -35,7 +37,29 @@ function App() {
     .catch((error) => {
       console.log(error);
     });
+    api.getInitialCards()
+    .then(serverCards => {
+      setCards(serverCards);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
   },[]);
+
+
+
+  function handleCardLike(card) {
+    const isLiked = card.likes.some(i => i._id === currentUser._id);
+    
+    api.toggleLike(card._id, !isLiked).then((newCard) => {
+      setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
+    });
+} 
+  function handleCardDelete(card) {
+    api.removeCard(card._id).then(() => {
+      setCards(() => cards.filter((c) => {return c._id !== card._id}));
+    });
+  }
 
 
   function handleEditAvatarClick() {
@@ -70,6 +94,7 @@ function App() {
         avatar: userInfo.avatar,
         _id: userInfo._id
       });
+      closeAllPopups();
     })
     .catch((error) => {
       console.log(error);
@@ -85,6 +110,19 @@ function App() {
         avatar: userInfo.avatar,
         _id: userInfo._id
       });
+      closeAllPopups();
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }
+
+
+  function handleAddPlaceSubmit(data) {
+    api.addNewCard(data)
+    .then(newCard => {
+      setCards([newCard, ...cards]);
+      closeAllPopups();
     })
     .catch((error) => {
       console.log(error);
@@ -98,6 +136,9 @@ function App() {
         <div className="page__wrapper">
           <Header />
           <Main 
+            cards={cards}
+            onCardLike={handleCardLike}
+            onCardDelete={handleCardDelete}
             onEditProfileClick={handleEditProfileClick}
             onAddPlaceClick={handleAddPlaceClick}
             onEditAvatarClick={handleEditAvatarClick}
@@ -107,13 +148,7 @@ function App() {
         </div>
         <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser}/>
         <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar}/>
-        
-        <PopupWithForm isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} name="add-card" title="New place">
-          <input type="text" name="name" className="popup__input popup__input_type_card-name" id="card-name-input" placeholder="Card name" required maxLength="30"/>
-          <span className="popup__error card-name-input-error"></span>
-          <input type="url" name="link" className="popup__input popup__input_type_card-link" id="card-link-input" placeholder="Card link" required/>
-          <span className="popup__error card-link-input-error"></span>
-        </PopupWithForm>
+        <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlaceSubmit={handleAddPlaceSubmit}/>
         <PopupWithForm name="remove-card" title="Are you sure?" />
         <ImagePopup card={selectedCard} onClose={closeAllPopups}/>
       </div>
