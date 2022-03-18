@@ -13,8 +13,8 @@ function EditAvatarPopup({isOpen, onClose, onUpdateAvatar}) {
   }
 
   return (
-    <PopupWithForm isOpen={isOpen}  onClose={onClose} onSubmit={handleSubmit} name="edit-profile-image" title="Change profile picture">
-          <input  ref={inputRef} type="url" name="link" className="popup__input popup__input_type_profile-img-link" id="profile-img-link-input" required/>
+    <PopupWithForm isOpen={isOpen}  onClose={onClose} onSubmit={handleSubmit} name="edit-profile-image" title="Change profile picture" buttonText="Save">
+          <input  ref={inputRef} type="url" name="link" className="popup__input popup__input_type_profile-img-link" id="profile-img-link-input" placeholder="Enter new link" required/>
           <span className="popup__error profile-img-link-input-error"></span>
     </PopupWithForm>
   );

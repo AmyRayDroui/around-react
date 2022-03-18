@@ -46,18 +46,37 @@ function App() {
     });
   },[]);
 
+  useEffect(() => {
+    const closeByEscape = (e) => {
+      if (e.key === 'Escape') {
+        closeAllPopups();
+      }
+    }
+
+    document.addEventListener('keydown', closeByEscape)
+    
+    return () => document.removeEventListener('keydown', closeByEscape)
+  }, []);
 
 
   function handleCardLike(card) {
     const isLiked = card.likes.some(i => i._id === currentUser._id);
     
-    api.toggleLike(card._id, !isLiked).then((newCard) => {
+    api.toggleLike(card._id, !isLiked)
+    .then((newCard) => {
       setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
+    })
+    .catch((error) => {
+      console.log(error);
     });
 } 
   function handleCardDelete(card) {
-    api.removeCard(card._id).then(() => {
+    api.removeCard(card._id)
+    .then(() => {
       setCards(() => cards.filter((c) => {return c._id !== card._id}));
+    })
+    .catch((error) => {
+      console.log(error);
     });
   }
 
@@ -149,7 +168,7 @@ function App() {
         <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser}/>
         <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar}/>
         <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlaceSubmit={handleAddPlaceSubmit}/>
-        <PopupWithForm name="remove-card" title="Are you sure?" />
+        <PopupWithForm name="remove-card" title="Are you sure?" buttonText="Yes"/>
         <ImagePopup card={selectedCard} onClose={closeAllPopups}/>
       </div>
     </CurrentUserContext.Provider>
