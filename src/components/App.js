@@ -1,11 +1,14 @@
-import Header from './Header'
-import Main from './Main'
-import Footer from './Footer'
+import { useState, useEffect } from 'react';
+import Header from './Header';
+import Main from './Main';
+import Footer from './Footer';
 import PopupWithForm from './PopupWithForm';
 import ImagePopup from './ImagePopup';
+import EditProfilePopup from './EditProfilePopup';
+import EditAvatarPopup  from './EditAvatarPopup';
 import api from '../utils/api.js';
 import {CurrentUserContext} from '../contexts/CurrentUserContext';
-import { useState, useEffect } from 'react';
+
 
 function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
@@ -58,6 +61,37 @@ function App() {
     setSelectedCard(card);
   }
 
+  function handleUpdateUser(data) {
+    api.setUserInfo(data)
+    .then(userInfo => {
+      setCurrentUser({
+        name: userInfo.name,
+        description: userInfo.about,
+        avatar: userInfo.avatar,
+        _id: userInfo._id
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }
+
+  function handleUpdateAvatar(data) {
+    api.setUserAvatar(data)
+    .then(userInfo => {
+      setCurrentUser({
+        name: userInfo.name,
+        description: userInfo.about,
+        avatar: userInfo.avatar,
+        _id: userInfo._id
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }
+
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
@@ -71,16 +105,9 @@ function App() {
           />
           <Footer />
         </div>
-        <PopupWithForm isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} name="edit-profile" title="Edit profile">
-          <input type="text" name="name" className="popup__input popup__input_type_name" id="name-input" required minLength="2" maxLength="40"/>
-          <span className="popup__error name-input-error"></span>
-          <input type="text" name="info" className="popup__input popup__input_type_info" id="info-input" required minLength="2" maxLength="200"/>
-          <span className="popup__error info-input-error"></span>
-        </PopupWithForm>
-        <PopupWithForm isOpen={isEditAvatarPopupOpen}  onClose={closeAllPopups} name="edit-profile-image" title="Change profile picture">
-          <input type="url" name="link" className="popup__input popup__input_type_profile-img-link" id="profile-img-link-input" required/>
-          <span className="popup__error profile-img-link-input-error"></span>
-        </PopupWithForm>
+        <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser}/>
+        <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar}/>
+        
         <PopupWithForm isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} name="add-card" title="New place">
           <input type="text" name="name" className="popup__input popup__input_type_card-name" id="card-name-input" placeholder="Card name" required maxLength="30"/>
           <span className="popup__error card-name-input-error"></span>
